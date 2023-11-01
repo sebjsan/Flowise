@@ -67,6 +67,7 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
     const removeDuplicateURL = (message) => {
         const visitedURLs = []
         const newSourceDocuments = []
+
         message.sourceDocuments.forEach((source) => {
             if (isValidURL(source.metadata.source) && !visitedURLs.includes(source.metadata.source)) {
                 visitedURLs.push(source.metadata.source)
@@ -154,7 +155,8 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
             const response = await predictionApi.sendMessageAndGetPrediction(chatflowid, params)
 
             if (response.data) {
-                const data = response.data
+                let data = response.data
+
                 if (typeof data === 'object' && data.text && data.sourceDocuments) {
                     if (!isChatFlowAvailableToStream) {
                         setMessages((prevMessages) => [
@@ -346,7 +348,9 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
                                                                 key={index}
                                                                 label={
                                                                     URL
-                                                                        ? `${URL.pathname.substring(0, 15)}...`
+                                                                        ? URL.pathname.substring(0, 15) === '/'
+                                                                            ? URL.host
+                                                                            : `${URL.pathname.substring(0, 15)}...`
                                                                         : `${source.pageContent.substring(0, 15)}...`
                                                                 }
                                                                 component='a'
